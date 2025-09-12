@@ -15,7 +15,8 @@
     "connect-pg-simple": "^7.0.0",
     "helmet": "^7.0.0",
     "dotenv": "^16.0.0"
-},
-"engines": {
+  },
+  "engines": {
     "node": "20.x"
+  }
 }
