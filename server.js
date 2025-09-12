@@ -11,12 +11,15 @@ app.use(cors({
   origin: 'https://gbairai.netlify.app',  // <-- remplace par ton vrai domaine Netlify
   credentials: true
 }));
-
 app.use(session({
   secret: process.env.SESSION_SECRET || 'dev-secret-change-this',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false }
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // vrai en prod (HTTPS)
+    sameSite: 'none', // nécessaire pour cross-site cookies
+    httpOnly: true
+  }
 }));
 
 const connectionString = process.env.DATABASE_URL || null;
