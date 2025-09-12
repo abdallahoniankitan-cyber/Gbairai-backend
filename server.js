@@ -382,3 +382,10 @@ app.post('/api/posts/:id/dislike', async (req,res) => {
 app.use((req, res) => {
   res.status(404).json({ error: 'not_found', message: 'Cette route n\'existe pas ou n\'est pas une API.' });
 });
+// Définit le port (Render fournit process.env.PORT)
+const PORT = process.env.PORT || 10000;
+
+// Démarre le serveur
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
