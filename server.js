@@ -6,7 +6,6 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const { Pool } = require('pg');
 const PgSession = require('connect-pg-simple')(session);
-const helmet = require('helmet');
 
 const app = express();
 app.use(helmet());
