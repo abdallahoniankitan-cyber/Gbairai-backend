@@ -378,16 +378,7 @@ app.post('/api/posts/:id/dislike', async (req,res) => {
     return res.json(rowToPost(updated.rows[0]));
   } catch(e){ return sendServerError(res,e); }
 });
-
-// STATIC FRONTEND
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.get('*', (req,res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Gbairai server running on port ${PORT}`);
-  if (!pool) console.log('Running with in-memory storage. Data will NOT persist across restarts.');
+// Catch-all pour les requêtes non-API
+app.use((req, res) => {
+  res.status(404).json({ error: 'not_found', message: 'Cette route n\'existe pas ou n\'est pas une API.' });
 });
