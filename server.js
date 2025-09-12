@@ -7,7 +7,10 @@ const { Pool } = require('pg');
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'https://gbairai.netlify.app',  // <-- remplace par ton vrai domaine Netlify
+  credentials: true
+}));
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'dev-secret-change-this',
