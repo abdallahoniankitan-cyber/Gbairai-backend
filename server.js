@@ -45,9 +45,10 @@ if (DATABASE_URL) {
 // Session store: prefer Postgres-backed store when pool exists, else MemoryStore in dev
 const sessionMiddleware = session({
   store: pool ? new PgSession({
-    pool: pool,
-    tableName: 'session'
-  }) : undefined,
+  pool: pool,
+  tableName: 'session',
+  createTableIfMissing: true  // <--- c'est ça qui crée la table automatiquement
+}) : undefined,
   secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
