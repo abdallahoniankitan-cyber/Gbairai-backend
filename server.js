@@ -12,17 +12,7 @@ const app = express();
 app.use(helmet());
 app.use(express.json());
 
-// Config
-const FRONT_ORIGIN = process.env.FRONT_ORIGIN || 'https://gbairai.netlify.app';
-const NODE_ENV = process.env.NODE_ENV || 'development';
-const PORT = process.env.PORT || 10000;
-const DATABASE_URL = process.env.DATABASE_URL || null;
-const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-secret-change-this';
 
-// Trust proxy if behind a proxy (Render, Heroku, etc.) so secure cookies work
-if (NODE_ENV === 'production') {
-  app.set('trust proxy', 1);
-}
 // Config
 const FRONT_ORIGIN = process.env.FRONT_ORIGIN || 'https://gbairai-tan.vercel.app';
 const NODE_ENV = process.env.NODE_ENV || 'development';
