@@ -23,14 +23,26 @@ const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-secret-change-this';
 if (NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
+// Config
+const FRONT_ORIGIN = process.env.FRONT_ORIGIN || 'https://gbairai-tan.vercel.app';
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const PORT = process.env.PORT || 10000;
+const DATABASE_URL = process.env.DATABASE_URL || null;
+const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-secret-change-this';
 
-// CORS
-app.use(cors({
+// Trust proxy if behind a proxy (Vercel, Render, Heroku, etc.) so secure cookies work
+if (NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
+// CORS : autoriser le frontend Vercel + envoyer les cookies
+const corsOptions = {
   origin: FRONT_ORIGIN,
-  credentials: true
-}));
+  credentials: true, // essentiel pour les cookies de session
+};
+app.use(require('cors')(corsOptions));
 
-// DB pool (optional in dev, required in prod)
+// DB pool (optionnel en dev, obligatoire en prod)
 let pool = null;
 if (DATABASE_URL) {
   pool = new Pool({
@@ -42,20 +54,20 @@ if (DATABASE_URL) {
   process.exit(1);
 }
 
-// Session store: prefer Postgres-backed store when pool exists, else MemoryStore in dev
+// Session store : Postgres si pool existe, sinon MemoryStore en dev
 const sessionMiddleware = session({
-  store: pool ? new PgSession({
-  pool: pool,
-  tableName: 'session',
-  createTableIfMissing: true  // <--- c'est ça qui crée la table automatiquement
-}) : undefined,
+  store: pool ? new (require('connect-pg-simple')(session))({
+    pool: pool,
+    tableName: 'session',
+    createTableIfMissing: true
+  }) : undefined,
   secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: NODE_ENV === 'production',            // produit: true (HTTPS)
+    secure: NODE_ENV === 'production', // HTTPS obligatoire en prod
     httpOnly: true,
-    sameSite: NODE_ENV === 'production' ? 'none' : 'lax',
+    sameSite: NODE_ENV === 'production' ? 'none' : 'lax', // cross-site cookies
     maxAge: 30 * 24 * 60 * 60 * 1000 // 30 jours
   }
 });
@@ -68,7 +80,6 @@ let inMemory = {
   zones: [],
   nextPostId: 1
 };
-
 // Ensure tables for Postgres
 async function ensureTables() {
   if (!pool) return;
